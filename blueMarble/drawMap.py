@@ -1,11 +1,15 @@
 import pygame
-import tkinter
 
-win = tkinter.Tk()
-SCREEN_SIZE = [win.winfo_screenwidth()-100, 700]
+SCREEN_SIZE = [1200, 700]
 
 BLACK = 0, 0, 0
 WHITE = 255, 255, 255
+RED = 255, 0, 0
+BLUE = 0, 100, 255
+YELLOW = 230, 230, 0
+GREEN = 100, 200, 100
+GREEN2 = 255, 0, 255
+
 
 screen = pygame.display.set_mode(SCREEN_SIZE)
 pygame.display.set_caption("Blue Marble")
@@ -14,18 +18,36 @@ pygame.font.init()
 myFont = pygame.font.SysFont("경기천년제목", 20, True, False)
 
 
-def writeCountry(s, x, y):
-    text_Title = myFont.render(s, True, BLACK)
-    text_Rect = text_Title.get_rect()
-    text_Rect.x = x
-    text_Rect.y = y
-    screen.blit(text_Title, text_Rect)
+def writeText(s, x, y):
+    textTitle = myFont.render(s, True, BLACK)
+    textRect = textTitle.get_rect()
+    textRect.x = x
+    textRect.y = y
+    screen.blit(textTitle, textRect)
 
 
-def drawMap():
+# 플레이어 그리기
+def drawPlayer(cp, pl):
+    pColor = [RED, YELLOW, BLUE, GREEN]
+
+    for i in range(1, cp+1):
+        pygame.draw.circle(screen, pColor[i-1], [800, 120*i], 30)
+        pygame.draw.rect(screen, pColor[i-1], [800, 120*i, 300, 80], 3)
+        writeText(str(i), 790, 115+((i-1)*120))
+        writeText("돈 :", 830, 15+(120*i))
+        writeText("땅 :", 830, 45+(120*i))
+        writeText(str(pl[i-1].get('money')), 870, 15 + (120 * i))
+        writeText(pl[i-1].get('land'), 870, 45+(120*i))
+
+        pygame.draw.circle(screen, pColor[i-1], [pl[i-1].get('position')[0]+(i*20), pl[i-1].get('position')[1]], 8)
+
+
+def drawMap(cp, pl):
     screen.fill(WHITE)
 
-    # 틀 그리기
+    drawPlayer(cp, pl)
+
+    # 지도 그리기
     pygame.draw.line(screen, BLACK, [100, 100], [700, 100], 3)
     pygame.draw.line(screen, BLACK, [100, 100], [100, 580], 3)
     pygame.draw.line(screen, BLACK, [100, 580], [700, 580], 3)
@@ -53,29 +75,32 @@ def drawMap():
     pygame.draw.line(screen, BLACK, [500, 500], [500, 580], 3)
 
     # 도시이름
-    writeCountry("사회복지", 110, 110)
-    writeCountry("오타와", 110, 190)
-    writeCountry("베를린", 110, 270)
-    writeCountry("코펜하겐", 110, 350)
-    writeCountry("아테네", 110, 430)
-    writeCountry("무인도", 110, 510)
+    writeText("사회복지", 110, 110)
+    writeText("오타와", 110, 190)
+    writeText("베를린", 110, 270)
+    writeText("코펜하겐", 110, 350)
+    writeText("아테네", 110, 430)
+    writeText("무인도", 110, 510)
 
-    writeCountry("상파울루", 210, 110)
-    writeCountry("이스탄불", 210, 510)
-    writeCountry("시드니", 310, 110)
-    writeCountry("카이로", 310, 510)
-    writeCountry("리스본", 410, 110)
-    writeCountry("싱가포르", 410, 510)
-    writeCountry("마드리드", 510, 110)
-    writeCountry("타이베이", 510, 510)
+    writeText("상파울루", 210, 110)
+    writeText("이스탄불", 210, 510)
+    writeText("시드니", 310, 110)
+    writeText("카이로", 310, 510)
+    writeText("리스본", 410, 110)
+    writeText("싱가포르", 410, 510)
+    writeText("마드리드", 510, 110)
+    writeText("타이베이", 510, 510)
 
-    writeCountry("우주여행", 610, 110)
-    writeCountry("런던", 610, 190)
-    writeCountry("뉴욕", 610, 270)
-    writeCountry("접수처", 610, 350)
-    writeCountry("서울", 610, 430)
-    writeCountry("출발", 610, 510)
+    writeText("우주여행", 610, 110)
+    writeText("런던", 610, 190)
+    writeText("뉴욕", 610, 270)
+    writeText("접수처", 610, 350)
+    writeText("서울", 610, 430)
+    writeText("출발", 610, 510)
 
+    # 주사위 굴리기 버튼
+    pygame.draw.rect(screen, GREEN2, [330, 410, 140, 60])
+    writeText("주사위 굴리기", 350, 430)
 
 
 
