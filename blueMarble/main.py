@@ -1,96 +1,143 @@
-import drawMap
 import pygame
-import random
+import time
+import sys
 
 pygame.init()
-land = ['출발', '타이베이', '싱가포르', '카이로', '이스탄불',
-        '무인도', '아테네', '코펜하겐', '베를린', '오타와',
-        '사회복지', '상파울루', '시드니', '리스본', '마드리드',
-        '우주여행', '런던', '뉴욕', '접수처', '서울']
-pPos = [[605, 570], [505, 570], [405, 570], [305, 570], [205, 570],
-        [105, 570], [105, 490], [105, 410], [105, 330], [105, 250],
-        [105, 170], [205, 170], [305, 170], [405, 170], [505, 170],
-        [605, 170], [605, 250], [605, 330], [605, 410], [605, 490]]
+
+BLACK = 0, 0, 0
+WHITE = 255, 255, 255
+RED = 255, 0, 0
+BLUE = 0, 100, 255
+YELLOW = 230, 230, 0
+GREEN = 100, 200, 100
+GRAY = 200, 200, 200
+
+titleImg = pygame.image.load("images/title.png")
+startImg = pygame.image.load("images/start.png")
+clickStartImg = pygame.image.load("images/clickedStart.png")
+
+infoImg = pygame.image.load("images/info.png")
+twoImg = pygame.image.load("images/two.png")
+clickTwoImg = pygame.image.load("images/clickedTwo.png")
+threeImg = pygame.image.load("images/three.png")
+clickThreeImg = pygame.image.load("images/clickedThree.png")
+fourImg = pygame.image.load("images/four.png")
+clickFourImg = pygame.image.load("images/clickedFour.png")
+
+mapImg = pygame.image.load("images/map.png")
+rollImg = pygame.image.load("images/roll.png")
+clickRollImg = pygame.image.load("images/clickedRoll.png")
+quitImg = pygame.image.load("images/quit.png")
+clickQuitImg = pygame.image.load("images/clickedQuit.png")
+
+p1Img = pygame.image.load("images/p1.png")
+p2Img = pygame.image.load("images/p2.png")
+p3Img = pygame.image.load("images/p3.png")
+p4Img = pygame.image.load("images/p4.png")
+
+
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 600
+SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Blue Marble Game")
+
 clock = pygame.time.Clock()
 
 
-# 플레이어 수 정하기
-def countPlayer():
-    while True:
-        x = int(input("플레이어 수를 정하세요.(2~4)"))
-        while x not in {2, 3, 4}:
-            x = int(input("플레이어 수를 정하세요.(2~4)"))
-        break
-    return x
+def main():
+    global FPSCLOCK, DISPLAYSURF, BASICFONT
+
+    # pygame 초기화
+    pygame.init()
+    FPSCLOCK = pygame.time.Clock()
+
+    DISPLAYSURF = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
+    pygame.display.set_caption('창고 관리')
+    BASICFONT = pygame.font.SysFont('malgungothic', 50)     # 한글 폰트
+
+    mainMenu()  # 시작 화면 생성
+
+    # while True: # 메인 게임 루프
+    #     playerMenu()
 
 
-# 플레이어 만들기
-def makePlayer(cp):
-    pList = []
-
-    for x in range(1, cp + 1):
-        player = {'position': pPos[0], 'where': land[0], 'money': 2000000, 'land': "없음", 'alive': 1}
-        pList.append(player)
-    #
-    # print(pList[1], pList[1].get('money'))
-    return pList
-
-
-# 주사위 굴리기
-def rollDice():
-    dice1 = random.randint(1, 6)
-    dice2 = random.randint(1, 6)
-    dice = dice1, dice2
-    return dice
+class Button:
+    def __init__(self, img_in, x, y, width, height, img_act, x_act, y_act, action=None):
+        mPos = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+        if x + width > mPos[0] > x and y + height > mPos[1] > y:
+            SCREEN.blit(img_act, (x_act, y_act))
+            if click[0] and action is not None:
+                time.sleep(0.5)
+                action()
+        else:
+            SCREEN.blit(img_in, (x, y))
 
 
-# 게임 시작
-def playGame():
-    diceFlag = None
-    start = False
-    cp = countPlayer()
-    count = -1
-    pList = []
-
-    playerList = makePlayer(cp)
-
-    for x in range(1, cp + 1):
-        nPos = 0
-        pList.append(nPos)
-
-    while not start:
-        clock.tick(10)
-
-        for event in pygame.event.get():
-            # 종료버튼 클릭
-            if event.type == pygame.QUIT:
-                start = True
-            # 주사위 굴리기 버튼 클릭
-            elif event.type == pygame.MOUSEBUTTONUP:
-                mouse_pos = pygame.mouse.get_pos()
-                if 330 < mouse_pos[0] < 470 and 410 < mouse_pos[1] < 470:
-                    diceFlag = True
-                    count = count + 1
-
-        # 맵그리기
-        drawMap.drawMap(cp, playerList)
-
-        if diceFlag:
-            dice = rollDice()
-            diceFlag = False
-            move = dice[0]+dice[1]
-            pList[count % cp] = pList[count % cp] + move
-
-            if pList[count % cp] > 19:
-                pList[count % cp] = pList[count % cp] - 20
-
-            playerList[count % cp]['position'] = pPos[pList[count % cp]]
-
-        pygame.display.flip()
-
+def quitGame():
     pygame.quit()
+    sys.exit()
 
 
-playGame()
+def playGame():
+    menu = True
+
+    while menu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        SCREEN.fill(WHITE)
+
+        mapDraw = SCREEN.blit(mapImg, (80, 50))
+        rollButton = Button(rollImg, 370, 350, 100, 100, clickRollImg, 370, 350, quitGame)
+        p1 = SCREEN.blit(p1Img, (600, 50))
+        p2 = SCREEN.blit(p2Img, (600, 170))
+        p3 = SCREEN.blit(p3Img, (600, 290))
+        p4 = SCREEN.blit(p4Img, (600, 410))
+        pygame.display.update()
+        clock.tick(15)
+
+
+def playerMenu():
+    menu = True
+
+    while menu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        SCREEN.fill(WHITE)
+
+        infoText = SCREEN.blit(infoImg, (100, 100))
+        twoButton = Button(twoImg, 200, 300, 132, 141, clickTwoImg, 200, 300, playGame)
+        threeButton = Button(threeImg, 400, 300, 132, 141, clickThreeImg, 400, 300, playGame)
+        fourButton = Button(fourImg, 600, 300, 132, 141, clickFourImg, 600, 300, playGame)
+        pygame.display.update()
+        clock.tick(15)
+
+
+def mainMenu():
+    menu = True
+
+    while menu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        SCREEN.fill(WHITE)
+
+        titleText = SCREEN.blit(titleImg, (160, 100))
+        startButton = Button(startImg, 350, 300, 300, 130, clickStartImg, 350, 300, playerMenu)
+        pygame.display.update()
+        clock.tick(15)
+
+
+if __name__ == '__main__':
+    main()
 
 
